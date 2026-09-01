@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EPR World: extended producer responsibility on paper and in practice</title>
+<meta name="description" content="Interactive companion to a global assessment of extended producer responsibility, built on the What a Waste 3.0 database.">
+<link rel="stylesheet" href="css/style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+</head>
+<body>
+
+<nav id="topnav">
+  <span class="brand">EPR World</span>
+  <div class="tabs" id="tabs">
+    <a href="#overview" data-view="overview" class="active">Overview</a>
+    <a href="#map" data-view="map">World map</a>
+    <a href="#evidence" data-view="evidence">Evidence</a>
+    <a href="#composition" data-view="composition">Composition</a>
+    <a href="#future" data-view="future">2050</a>
+    <a href="#ewaste" data-view="ewaste">E-waste</a>
+    <a href="#tool" data-view="tool" class="cta">Readiness check</a>
+  </div>
+</nav>
+
+<main>
+
+<section class="view active" id="view-overview">
+  <header class="hero">
+    <h1>Extended producer responsibility:<br>on paper and in practice</h1>
+    <p class="sub">An interactive companion to the first global assessment of EPR,
+       built on the World Bank What a Waste 3.0 database.</p>
+    <div class="stats" id="hero-stats"></div>
+  </header>
+  <div class="finding-grid">
+    <a class="finding" href="#map">
+      <h3>The landscape</h3>
+      <p>Two thirds of the world now has some form of EPR. See who, for which
+         materials, and in what legal form.</p>
+    </a>
+    <a class="finding" href="#evidence">
+      <h3>Presence is not performance</h3>
+      <p>An EPR law alone is not associated with higher recycling. The link
+         appears only where institutions can enforce it.</p>
+    </a>
+    <a class="finding" href="#composition">
+      <h3>Development reshapes waste</h3>
+      <p>Richer countries throw away exactly the materials EPR governs: the
+         packaging-relevant share doubles with income.</p>
+    </a>
+    <a class="finding" href="#future">
+      <h3>The 2050 gap</h3>
+      <p>A fifth of projected 2050 waste will arise where no binding EPR exists
+         today, concentrated in five countries.</p>
+    </a>
+    <a class="finding" href="#ewaste">
+      <h3>The WEEE gap</h3>
+      <p>12.4% of reported e-waste arises in countries without
+         electronics-specific EPR.</p>
+    </a>
+    <a class="finding" href="#tool">
+      <h3>Readiness check</h3>
+      <p>Pick any country and see whether the enabling conditions for EPR are
+         in place there.</p>
+    </a>
+  </div>
+</section>
+
+<section class="view" id="view-map">
+  <h2>The global EPR landscape</h2>
+  <p class="lede">Color the map by legal status, recycling outcomes, or
+     governance, and click any country for its profile.</p>
+  <div class="controls" id="map-modes">
+    <button data-mode="status" class="active">EPR status</button>
+    <button data-mode="recycling">Recycling rate</button>
+    <button data-mode="governance">Governance</button>
+  </div>
+  <div class="map-wrap">
+    <div id="chart-map" class="chart tall"></div>
+    <aside id="country-card"><p class="hint">Click a country on the map.</p></aside>
+  </div>
+</section>
+
+<section class="view" id="view-evidence">
+  <h2>Presence is not performance</h2>
+  <p class="lede">Having an EPR law is not associated with higher recycling on its
+     own. The association appears only where institutions can enforce it, and only
+     once waste collection is nearly universal.</p>
+  <div class="controls" id="evidence-tabs">
+    <button data-tab="gradient" class="active">Governance gradient</button>
+    <button data-tab="marginal">EPR margin</button>
+    <button data-tab="specs">400 specifications</button>
+    <button data-tab="gate">Collection gate</button>
+  </div>
+  <div id="chart-evidence" class="chart"></div>
+  <p class="note" id="evidence-note"></p>
+</section>
+
+<section class="view" id="view-composition">
+  <h2>Development reshapes the waste</h2>
+  <p class="lede">As countries grow richer, organics shrink and the packaging-relevant
+     share of waste (paper, plastic, glass, metal) doubles. The materials EPR governs
+     are exactly the materials development creates.</p>
+  <div id="chart-composition" class="chart tall"></div>
+</section>
+
+<section class="view" id="view-future">
+  <h2>Where the waste of 2050 will arise</h2>
+  <p class="lede">Tiles are sized by projected 2050 municipal waste and colored by
+     current EPR status. A fifth of future waste will arise where no binding EPR
+     exists today, and nearly half of that sits in just five countries.</p>
+  <div id="chart-treemap" class="chart tall"></div>
+  <div id="chart-shares" class="chart short"></div>
+</section>
+
+<section class="view" id="view-ewaste">
+  <h2>The WEEE gap</h2>
+  <p class="lede">Electronic waste grows with income. Open circles are countries
+     without WEEE-specific EPR; bubble area is national tonnage.</p>
+  <div id="chart-ewaste" class="chart tall"></div>
+</section>
+
+<section class="view" id="view-tool">
+  <h2>EPR readiness check</h2>
+  <p class="lede">Pick a country to see whether the two enabling conditions this
+     study identifies (institutional quality and near-universal collection) are in
+     place, and what the model implies for the recycling margin of EPR there.</p>
+  <div class="tool-grid">
+    <div>
+      <label for="tool-country">Country</label>
+      <select id="tool-country"></select>
+      <div id="tool-cards"></div>
+    </div>
+    <div id="chart-tool" class="chart"></div>
+  </div>
+  <p class="note">Estimates are conditional associations from a cross-section of 119
+     countries, not causal effects. Read them as a diagnostic, not a forecast.</p>
+</section>
+
+</main>
+
+<script src="js/charts.js"></script>
+<script src="js/map.js"></script>
+<script src="js/tool.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
