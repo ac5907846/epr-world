@@ -43,8 +43,7 @@ function initTool(DATA) {
 
     cards.push(`<div class="tool-card">
       <div class="big">${M.num(m, 1)} pp</div>
-      Pooled association of EPR with recycling at this level of governance
-      (not a causal effect; it does not hold within income groups).</div>`);
+      Pooled association of EPR with recycling at this level of governance.</div>`);
 
     const statusLine = c.epr
       ? `${c.name} has an EPR scheme (${statusLabel(c.status)}).`

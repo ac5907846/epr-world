@@ -1,8 +1,11 @@
-/* World map with three coloring modes and a country detail card. */
+/* World map with three coloring modes and a country card. The map steps
+   through the countries by itself, one card after the other, and keeps doing
+   so until the reader presses Pause or clicks inside the map. */
 
 function buildMap(DATA, geojson) {
   echarts.registerMap("world", geojson);
-  const ch = echarts.init(document.getElementById("chart-map"));
+  const el = document.getElementById("chart-map");
+  const ch = echarts.init(el);
 
   const STATUS_VAL = { "Law in force": 3, "Policy approved": 2,
                        "Draft or planning": 1, "No EPR scheme": 0 };
@@ -32,6 +35,13 @@ function buildMap(DATA, geojson) {
       left: 10, bottom: 10, textStyle: { color: "#494e5c" } },
   };
 
+  let shown = null;                     // the country on the card
+
+  function mark(iso) {
+    ch.dispatchAction({ type: "downplay", seriesIndex: 0 });
+    if (iso) ch.dispatchAction({ type: "highlight", seriesIndex: 0, name: iso });
+  }
+
   function render(mode) {
     ch.setOption({
       tooltip: { formatter: (p) => {
@@ -51,9 +61,9 @@ function buildMap(DATA, geojson) {
         select: { disabled: true },
         data: seriesData(mode) }],
     }, { notMerge: true });
+    mark(shown);                        // a new option clears the highlight
   }
 
-  ch.on("click", (p) => showCountry(DATA, p.name));
   render("status");
 
   document.querySelectorAll("#map-modes button").forEach((b) => {
@@ -64,6 +74,63 @@ function buildMap(DATA, geojson) {
       render(b.dataset.mode);
     });
   });
+
+  /* ---- the tour of the countries ----
+     Countries drawn on the map, from the largest projected waste of 2050 to
+     the smallest. */
+  const view = document.getElementById("view-map");
+  const btn = document.getElementById("map-play");
+  const drawn = new Set(geojson.features.map((f) => f.properties.iso3c));
+  const order = Object.entries(DATA.countries)
+    .filter(([iso]) => drawn.has(iso))
+    .sort((a, b) => (b[1].msw_2050_t || 0) - (a[1].msw_2050_t || 0))
+    .map(([iso]) => iso);
+  const STEP_MS = 2600;
+  let k = -1, playing = false, t0 = 0, elapsed = 0;
+
+  function select(iso) {
+    shown = iso;
+    mark(iso);
+    showCountry(DATA, iso);
+    elapsed = 0;
+    t0 = performance.now();
+  }
+  function tick(now) {
+    if (!playing) return;
+    /* the clock waits while the page or this view is not shown */
+    if (document.hidden || !view.classList.contains("active")) t0 = now - elapsed;
+    elapsed = now - t0;
+    if (elapsed >= STEP_MS) {
+      k = (k + 1) % order.length;
+      select(order[k]);
+    }
+    M.frame(tick);
+  }
+  function play() {
+    if (playing) return;
+    playing = true;
+    btn.textContent = "Pause";
+    t0 = performance.now() - elapsed;
+    M.frame(tick);
+  }
+  function pause() {
+    playing = false;
+    btn.textContent = "Play";
+  }
+
+  btn.addEventListener("click", () => (playing ? pause() : play()));
+  /* A click inside the map stops the tour; on a country it shows that
+     country, and the tour goes on from there when it is started again. */
+  ch.on("click", (p) => {
+    if (order.includes(p.name)) k = order.indexOf(p.name);
+    select(p.name);
+  });
+  el.addEventListener("click", pause);
+  ch.on("georoam", pause);              // dragging or zooming the map
+
+  k = 0;
+  select(order[0]);
+  if (!M.reduced) play();
   return ch;
 }
 
@@ -74,7 +141,10 @@ function fmt(v, suffix = "", dec = 1) {
 function showCountry(DATA, iso) {
   const c = DATA.countries[iso];
   const el = document.getElementById("country-card");
-  if (!c) { el.innerHTML = "<p class='hint'>No profile for this territory.</p>"; return; }
+  el.classList.remove("in");
+  void el.offsetWidth;                  // restart the fade of the card
+  el.classList.add("in");
+  if (!c) { el.innerHTML = "<p>No profile for this territory.</p>"; return; }
   const pillColor = { "Law in force": "#1b56ad", "Policy approved": "#3f8a63",
     "Draft or planning": "#5d9c7b", "No EPR scheme": "#818697" }[c.status] || "#818697";
   const streams = Object.entries(c.streams).map(([k, v]) =>

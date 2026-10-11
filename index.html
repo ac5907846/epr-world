@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>EPR World: extended producer responsibility on paper and in practice</title>
 <meta name="description" content="Interactive companion to a global assessment of extended producer responsibility, built on the What a Waste 3.0 database.">
-<link rel="preload" href="data/world.geojson?v=2" as="fetch" crossorigin>
-<link rel="preload" href="data/countries.json?v=2" as="fetch" crossorigin>
+<link rel="preload" href="data/world.geojson?v=3" as="fetch" crossorigin>
+<link rel="preload" href="data/countries.json?v=3" as="fetch" crossorigin>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='7' fill='%231b56ad'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="css/style.css?v=2">
+<link rel="stylesheet" href="css/style.css?v=3">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
 </head>
 <body>
@@ -37,11 +37,10 @@
   </header>
 
   <div class="story" id="p-story">
-    <div class="story-head">
-      <div class="controls story-steps" id="story-steps"></div>
+    <div class="fig-head">
+      <div class="controls" id="story-steps"></div>
       <button type="button" class="pill" id="story-play">Play</button>
     </div>
-    <div class="story-progress"><i id="story-bar"></i></div>
     <div class="story-body">
       <div id="chart-story" class="chart story-chart"></div>
       <aside class="readout" id="story-readout">
@@ -54,22 +53,22 @@
       </aside>
     </div>
   </div>
-
-  <div class="finding-grid" id="finding-grid"></div>
 </section>
 
 <section class="view" id="view-map">
   <h2>The global EPR landscape</h2>
-  <p class="lede">Color the map by legal status, recycling outcomes, or
-     governance, and click any country for its profile.</p>
-  <div class="controls" id="map-modes">
-    <button data-mode="status" class="active">EPR status</button>
-    <button data-mode="recycling">Recycling rate</button>
-    <button data-mode="governance">Governance</button>
+  <p class="lede">Legal status of EPR, recycling rate, and governance by country.</p>
+  <div class="fig-head">
+    <div class="controls" id="map-modes">
+      <button data-mode="status" class="active">EPR status</button>
+      <button data-mode="recycling">Recycling rate</button>
+      <button data-mode="governance">Governance</button>
+    </div>
+    <button type="button" class="pill" id="map-play">Play</button>
   </div>
   <div class="map-wrap">
     <div id="chart-map" class="chart tall"></div>
-    <aside id="country-card"><p class="hint">Click a country on the map.</p></aside>
+    <aside id="country-card"></aside>
   </div>
 </section>
 
@@ -114,9 +113,7 @@
 <section class="view" id="view-tool">
   <h2>Country profile</h2>
   <p class="lede">EPR status, governance, and collection coverage of a country, and
-     its position on the pooled association of EPR with recycling. The association
-     does not hold within income groups, so the profile describes a position and does
-     not predict an outcome.</p>
+     its position on the pooled association of EPR with recycling.</p>
   <div class="tool-grid">
     <div>
       <label for="tool-country">Country</label>
@@ -125,17 +122,18 @@
     </div>
     <div id="chart-tool" class="chart"></div>
   </div>
-  <p class="note">Estimates are conditional associations from a cross-section of 119
-     countries, not causal effects.</p>
+  <p class="note">The association is estimated on a cross-section of 119 countries. It
+     is not a causal effect and does not hold within income groups, so the profile
+     describes a position and does not predict an outcome.</p>
 </section>
 
 </main>
 
-<script src="js/motion.js?v=2"></script>
-<script src="js/charts.js?v=2"></script>
-<script src="js/map.js?v=2"></script>
-<script src="js/tool.js?v=2"></script>
-<script src="js/story.js?v=2"></script>
-<script src="js/app.js?v=2"></script>
+<script src="js/motion.js?v=3"></script>
+<script src="js/charts.js?v=3"></script>
+<script src="js/map.js?v=3"></script>
+<script src="js/tool.js?v=3"></script>
+<script src="js/story.js?v=3"></script>
+<script src="js/app.js?v=3"></script>
 </body>
 </html>

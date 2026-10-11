@@ -4,7 +4,7 @@
 
 const DATA = {};
 const viewCharts = {};
-const VERSION = 2;          // bump with every release: the host caches hard
+const VERSION = 3;          // bump with every release: the host caches hard
 
 async function loadJSON(name) {
   const res = await fetch("data/" + name + "?v=" + VERSION);
@@ -12,32 +12,9 @@ async function loadJSON(name) {
   return res.json();
 }
 
-/* The six entries of the overview, with their numbers read from the data. */
-function findings() {
-  const m = DATA.meta, s = DATA.story, t = m.treemap_summary;
-  const items = [
-    ["#map", "The landscape",
-     `Two thirds of countries (${s.map.epr_pct}%) have an EPR scheme. The map shows ` +
-     "which countries, for which materials, and in what legal form."],
-    ["#evidence", "EPR, governance and recycling",
-     "Adopting EPR is not by itself associated with higher recycling. Higher " +
-     "recycling appears only where binding EPR coincides with strong governance."],
-    ["#composition", "Development reshapes waste",
-     "The packaging-relevant share of municipal waste doubles with income."],
-    ["#future", "The 2050 gap",
-     `${M.num(t.share_2050_no_binding, 1)}% of the municipal waste projected for 2050 ` +
-     "will arise in countries without binding EPR, " +
-     `${M.num(t.top5_no_binding_share_of_nb, 1)}% of it in five countries.`],
-    ["#ewaste", "The WEEE gap",
-     `${M.num(s.ewaste_uncovered_pct, 1)}% of reported e-waste arises in countries ` +
-     "without WEEE-specific EPR."],
-    ["#tool", "Country profile",
-     "EPR status, governance, and collection coverage of any country."],
-  ];
-  document.getElementById("finding-grid").innerHTML = items.map(
-    ([href, title, text], i) => `<a class="finding" href="${href}" style="--i:${i}">
-       <h3>${title}</h3><p>${text}</p></a>`).join("");
-
+/* The lede of the 2050 view takes its numbers from the data. */
+function ledes() {
+  const t = DATA.meta.treemap_summary;
   document.getElementById("future-lede").textContent =
     "Tiles are sized by projected 2050 municipal waste and colored by current EPR " +
     `status. ${M.num(t.share_2050_no_binding, 1)}% of that waste will arise in countries ` +
@@ -114,7 +91,7 @@ async function main() {
   Object.assign(DATA, { countries, curves, treemap, specs, meta, story, geojson });
   echarts.registerMap("world", geojson);
 
-  findings();
+  ledes();
   window.addEventListener("hashchange", router);
   window.addEventListener("resize", () =>
     Object.values(viewCharts).flat().forEach((c) => c && c.resize()));

@@ -195,7 +195,8 @@ function initStory(DATA) {
 
   /* ---- controls ---- */
   const $ = (id) => document.getElementById(id);
-  const bar = $("story-bar"), playBtn = $("story-play"), ro = $("story-readout");
+  const playBtn = $("story-play"), ro = $("story-readout");
+  const view = $("view-overview");
   const stepBox = $("story-steps");
   stepBox.innerHTML = steps.map((s, k) =>
     `<button type="button" data-step="${k}">${s.button}</button>`).join("");
@@ -222,14 +223,13 @@ function initStory(DATA) {
     M.count(ro.querySelector(".ro-n"), s.value, s.dec, 1000);
     elapsed = 0;
     t0 = performance.now();
-    bar.style.width = "0%";
   }
 
   function tick(now) {
     if (!playing) return;
-    if (document.hidden) t0 = now - elapsed;  // the clock waits for the page
+    /* the clock waits while the page or this view is not shown */
+    if (document.hidden || !view.classList.contains("active")) t0 = now - elapsed;
     elapsed = now - t0;
-    bar.style.width = Math.min(100, 100 * elapsed / STEP_MS) + "%";
     if (elapsed >= STEP_MS) show(cur + 1);
     M.frame(tick);
   }
@@ -250,14 +250,10 @@ function initStory(DATA) {
     const b = e.target.closest("button");
     if (b) show(+b.dataset.step);
   });
-  /* Any input from the reader stops the tour; only the button starts it. */
-  const stop = (e) => {
-    const onButton = e.target && e.target.closest && e.target.closest("#story-play");
-    if (onButton && (e.type !== "keydown" || e.key === "Enter" || e.key === " ")) return;
-    pause();
-  };
-  ["pointerdown", "keydown", "wheel", "touchstart"].forEach((ev) =>
-    window.addEventListener(ev, stop, { capture: true, passive: true }));
+  /* The tour keeps running. It stops only when the reader presses Pause or
+     clicks on the figure; scrolling, keys and clicks elsewhere do not stop
+     it, and choosing a step continues from that step. */
+  ch.getDom().addEventListener("click", pause);
 
   window.addEventListener("resize", () => {
     if (cur === 0) ch.setOption(steps[0].option(), true);   // refit the map

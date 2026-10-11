@@ -55,26 +55,8 @@ main .view.active { display: block; animation: fadein .25s ease; }
   background: linear-gradient(180deg, var(--wash), #fff);
 }
 
-.finding-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1rem; padding: 1.6rem 6vw 3rem;
-}
-.finding {
-  display: block; text-decoration: none; color: inherit;
-  border: 1px solid var(--grid); border-radius: 12px; padding: 1.1rem 1.2rem;
-  transition: border-color .15s, box-shadow .15s;
-}
-.finding:hover {
-  border-color: var(--petrol-mid);
-  box-shadow: 0 4px 14px rgba(27, 86, 173, .08);
-}
-.finding h3 { color: var(--petrol); font-size: 1.02rem; margin-bottom: .35rem; }
-.finding p { color: var(--ink2); font-size: .88rem; }
 .hero h1 { font-size: clamp(1.7rem, 4vw, 2.7rem); line-height: 1.18; }
 .hero .sub { margin-top: 1rem; max-width: 46rem; color: var(--ink2); font-size: 1.06rem; }
-.stats { display: flex; flex-wrap: wrap; gap: 2.6rem; margin-top: 2.2rem; }
-.stat .num { font-size: 2rem; font-weight: 700; color: var(--petrol); }
-.stat .lbl { font-size: .85rem; color: var(--ink3); max-width: 11rem; }
 
 section { padding: 2.4rem 4vw 3rem; }
 section h2 { font-size: 1.5rem; margin-bottom: .6rem; }
@@ -96,12 +78,13 @@ section h2 { font-size: 1.5rem; margin-bottom: .6rem; }
 .chart.short { height: 220px; margin-top: .6rem; }
 
 .map-wrap { display: grid; grid-template-columns: 1fr 300px; gap: 1.2rem; }
+/* Fixed height: the page below does not move as the cards change. */
 #country-card {
   border: 1px solid var(--grid); border-radius: 12px;
   padding: 1.1rem; background: var(--wash);
-  align-self: start; font-size: .9rem;
+  align-self: start; font-size: .9rem; min-height: 330px;
 }
-#country-card .hint { color: var(--ink3); }
+#country-card.in > * { animation: rise .35s ease both; }
 #country-card h3 { margin-bottom: .3rem; }
 #country-card .status-pill {
   display: inline-block; padding: .12rem .6rem; border-radius: 999px;
@@ -134,18 +117,17 @@ section h2 { font-size: 1.5rem; margin-bottom: .6rem; }
 
 /* ---- landing figure: four steps in one chart, with a readout ---- */
 .story { padding: .4rem 6vw 1rem; }
-.story-head {
+.fig-head {
   display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  margin-bottom: .9rem;
 }
-.story-steps { margin-bottom: 0; }
+.fig-head .controls { margin-bottom: 0; }
 .pill {
   border: 1px solid var(--rule); background: #fff; color: var(--ink);
   padding: .32rem .9rem; border-radius: 999px; cursor: pointer;
   font-size: .82rem; min-width: 4.6rem;
 }
 .pill:hover { background: var(--wash); border-color: var(--ink3); }
-.story-progress { height: 2px; background: var(--grid); margin: .65rem 0 .5rem; }
-.story-progress i { display: block; height: 100%; width: 0; background: var(--petrol); }
 .story-body {
   display: grid; grid-template-columns: minmax(0, 1fr) 290px; gap: 1.8rem;
   align-items: start;
@@ -175,10 +157,6 @@ section h2 { font-size: 1.5rem; margin-bottom: .6rem; }
 @keyframes rise {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: none; }
-}
-.finding {
-  animation: rise .5s ease both;
-  animation-delay: calc(var(--i, 0) * 70ms + 150ms);
 }
 
 @media (prefers-reduced-motion: reduce) {
