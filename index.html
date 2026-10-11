@@ -5,11 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>EPR World: extended producer responsibility on paper and in practice</title>
 <meta name="description" content="Interactive companion to a global assessment of extended producer responsibility, built on the What a Waste 3.0 database.">
-<link rel="preload" href="data/world.geojson?v=4" as="fetch" crossorigin>
-<link rel="preload" href="data/countries.json?v=4" as="fetch" crossorigin>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js" as="script">
+<link rel="preload" href="data/story.json?v=5" as="fetch" crossorigin>
+<link rel="preload" href="data/hero.json?v=5" as="fetch" crossorigin>
+<link rel="preload" href="data/world.geojson?v=5" as="fetch" crossorigin>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='7' fill='%231b56ad'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="css/style.css?v=4">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+<link rel="stylesheet" href="css/style.css?v=5">
 </head>
 <body>
 
@@ -48,7 +50,7 @@
   <div class="story" id="p-story">
     <div class="fig-head">
       <div class="controls" id="story-steps"></div>
-      <button type="button" class="pill" id="story-play">Play</button>
+      <button type="button" class="pill" id="story-play">Pause</button>
     </div>
     <div class="story-body">
       <div id="chart-story" class="chart story-chart"></div>
@@ -138,11 +140,11 @@
 
 </main>
 
-<script src="js/motion.js?v=4"></script>
-<script src="js/charts.js?v=4"></script>
-<script src="js/map.js?v=4"></script>
-<script src="js/tool.js?v=4"></script>
-<script src="js/story.js?v=4"></script>
-<script src="js/app.js?v=4"></script>
+<script defer src="js/motion.js?v=5"></script>
+<script defer src="js/charts.js?v=5"></script>
+<script defer src="js/map.js?v=5"></script>
+<script defer src="js/tool.js?v=5"></script>
+<script defer src="js/story.js?v=5"></script>
+<script defer src="js/app.js?v=5"></script>
 </body>
 </html>

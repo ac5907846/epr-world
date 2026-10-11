@@ -82,6 +82,9 @@ section h2 { font-size: 1.5rem; margin-bottom: .6rem; }
 }
 
 .chart { width: 100%; height: 460px; }
+/* Until a chart is drawn its place is a quiet panel, so the page never looks broken. */
+.chart:empty { background: var(--wash); border-radius: 12px; animation: wait 1.6s ease-in-out infinite; }
+@keyframes wait { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
 .chart.tall { height: 560px; }
 .chart.short { height: 220px; margin-top: .6rem; }
 

@@ -93,9 +93,46 @@ for _, row in df.iterrows():
 dump(countries, "countries.json")
 
 # ---------- world.geojson ----------
-shutil.copyfile(A / "01_descriptives" / "results" / "epr_map_data.geojson",
-                DATA / "world.geojson")
+# The map is the heaviest file of the landing view. Coordinates are rounded
+# to 2 decimals (about 1 km, far finer than a world map can show) and only
+# the country code is kept, which cuts the download by two thirds.
+src_geo = json.loads((A / "01_descriptives" / "results" / "epr_map_data.geojson")
+                     .read_text(encoding="utf-8"))
+features = []
+for f in src_geo["features"]:
+    geom = f["geometry"]
+    polys = geom["coordinates"] if geom["type"] == "MultiPolygon" else [geom["coordinates"]]
+    kept = []
+    for poly in polys:
+        rings = []
+        for ring in poly:
+            pts = []
+            for x, y in ring:
+                q = [round(x, 2), round(y, 2)]
+                if not pts or pts[-1] != q:
+                    pts.append(q)
+            if len(pts) >= 4:
+                rings.append(pts)
+        if rings:
+            kept.append(rings)
+    assert kept, f["properties"]["iso3c"]          # no country may vanish
+    features.append({"type": "Feature", "properties": {"iso3c": f["properties"]["iso3c"]},
+                     "geometry": {"type": "MultiPolygon", "coordinates": kept}})
+assert len(features) == len(src_geo["features"])
+(DATA / "world.geojson").write_text(
+    json.dumps({"type": "FeatureCollection", "features": features}, separators=(",", ":")),
+    encoding="utf-8")
 print(f"data/world.geojson  {(DATA / 'world.geojson').stat().st_size / 1e3:.0f} KB")
+
+# ---------- hero.json: the few fields of each country that the landing view draws ----------
+dump({iso: {"name": c["name"], "epr": c["epr"], "binding": c["binding"], "income": c["income"],
+            "governance": None if c["governance"] is None or c["governance"] != c["governance"]
+            else round(float(c["governance"]), 3),
+            "recycling": None if c["recycling"] is None or c["recycling"] != c["recycling"]
+            else round(float(c["recycling"]), 2),
+            "msw_2050_t": None if c["msw_2050_t"] is None or c["msw_2050_t"] != c["msw_2050_t"]
+            else int(round(float(c["msw_2050_t"])))}
+      for iso, c in countries.items()}, "hero.json")
 
 # ---------- curves.json ----------
 lw = r("04_governance_gradient", "lowess_raw.csv")

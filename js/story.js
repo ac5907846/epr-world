@@ -2,11 +2,15 @@
    are countries, and they morph from step to step: regions of the map become
    points of the scatter, points gather into the estimates by income group,
    and the estimates open into the tiles of projected waste. Every value is
-   read from data/story.json and data/countries.json. */
+   read from data/story.json and data/hero.json.
 
-function initStory(DATA) {
-  const S = DATA.story, CN = DATA.countries;
-  const ch = echarts.init(document.getElementById("chart-story"));
+   The page shows in two beats so that it never looks empty: prepareStory()
+   needs only the small story file and fills the buttons and the readout;
+   start() draws the chart once the chart library and the map are there. */
+
+function prepareStory(S) {
+  let CN = null, ch = null;             // set by start()
+  const dom = document.getElementById("chart-story");
   const INK = "#1c1e26", INK2 = "#494e5c", INK3 = "#818697",
         RULE = "#c9cdd8", GRID = "#e9ebf1";
   const COL = { binding: "#1b56ad", non: "#6eaf8e", none: "#d5d9e4" };
@@ -24,7 +28,7 @@ function initStory(DATA) {
 
   /* ---- step 1: the map ---- */
   function mapOption() {
-    const box = ch.getDom();
+    const box = dom;
     const wide = box.clientWidth / Math.max(1, box.clientHeight) > 1.95;
     const fit = wide ? { left: "center", top: 10, bottom: 6 }
                      : { left: 4, right: 4, top: "middle" };
@@ -190,7 +194,7 @@ function initStory(DATA) {
       detail: `Waste grows from ${M.num(O.msw_2022_bn_t, 2)} to ` +
               `${M.num(O.msw_2050_bn_t, 2)} billion tonnes; low- and lower-middle-income ` +
               `countries account for ${O.low_and_lower_middle_pct}% of the growth`,
-      source: "Figure 10 and Table S7 of the article" },
+      source: "Figure 10 and Table S5 of the article" },
   ];
 
   /* ---- controls ---- */
@@ -209,7 +213,7 @@ function initStory(DATA) {
   function show(k) {
     cur = (k + steps.length) % steps.length;
     const s = steps[cur];
-    ch.setOption(s.option(), true);
+    if (ch) ch.setOption(s.option(), true);
     stepBox.querySelectorAll("button").forEach((b, j) =>
       b.classList.toggle("active", j === cur));
     ro.classList.remove("in");
@@ -237,6 +241,7 @@ function initStory(DATA) {
     if (playing) return;
     playing = true;
     playBtn.textContent = "Pause";
+    if (!ch) return;                      // start() sets the clock going
     t0 = performance.now() - elapsed;
     M.frame(tick);
   }
@@ -250,17 +255,28 @@ function initStory(DATA) {
     const b = e.target.closest("button");
     if (b) show(+b.dataset.step);
   });
-  /* The tour keeps running. It stops only when the reader presses Pause or
-     clicks on the figure; scrolling, keys and clicks elsewhere do not stop
-     it, and choosing a step continues from that step. */
-  ch.getDom().addEventListener("click", pause);
-
-  window.addEventListener("resize", () => {
-    if (cur === 0) ch.setOption(steps[0].option(), true);   // refit the map
-  });
-
+  /* The readout and the buttons, before any chart exists. */
   show(0);
-  const landing = !location.hash || location.hash === "#overview";
-  if (landing && !M.reduced) play(); else pause();
-  return ch;
+  /* The tour is on unless the reader asked for reduced motion; its clock
+     runs only while the overview is shown (see tick). */
+  if (M.reduced) pause(); else play();
+
+  /* The chart joins in. The tour keeps running: it stops only when the
+     reader presses Pause or clicks on the figure; scrolling, keys and
+     clicks elsewhere do not stop it, and choosing a step continues from
+     that step. */
+  function start(DATA) {
+    CN = DATA.hero;
+    ch = echarts.init(dom);
+    ch.setOption(steps[cur].option(), true);
+    dom.addEventListener("click", pause);
+    window.addEventListener("resize", () => {
+      if (cur === 0) ch.setOption(steps[0].option(), true);   // refit the map
+    });
+    elapsed = 0;
+    t0 = performance.now();
+    if (playing) M.frame(tick);
+    return ch;
+  }
+  return { start };
 }
