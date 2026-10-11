@@ -4,31 +4,52 @@
 
 const DATA = {};
 const viewCharts = {};
+const VERSION = 2;          // bump with every release: the host caches hard
 
 async function loadJSON(name) {
-  const res = await fetch("data/" + name);
+  const res = await fetch("data/" + name + "?v=" + VERSION);
   if (!res.ok) throw new Error("failed to load " + name);
   return res.json();
 }
 
-function heroStats() {
-  const m = DATA.meta;
+/* The six entries of the overview, with their numbers read from the data. */
+function findings() {
+  const m = DATA.meta, s = DATA.story, t = m.treemap_summary;
   const items = [
-    [m.epr_pct + "%", "of 216 countries and economies now have some form of EPR"],
-    ["+" + m.interaction.toFixed(1) + " pp", "recycling margin of EPR per unit of governance (p = " + m.interaction_p.toFixed(2) + ")"],
-    [m.gate_break + "%", "collection coverage above which recycling takes off"],
-    [m.treemap_summary.share_2050_no_binding + "%", "of projected 2050 waste will arise without binding EPR"],
+    ["#map", "The landscape",
+     `Two thirds of countries (${s.map.epr_pct}%) have an EPR scheme. The map shows ` +
+     "which countries, for which materials, and in what legal form."],
+    ["#evidence", "EPR, governance and recycling",
+     "Adopting EPR is not by itself associated with higher recycling. Higher " +
+     "recycling appears only where binding EPR coincides with strong governance."],
+    ["#composition", "Development reshapes waste",
+     "The packaging-relevant share of municipal waste doubles with income."],
+    ["#future", "The 2050 gap",
+     `${M.num(t.share_2050_no_binding, 1)}% of the municipal waste projected for 2050 ` +
+     "will arise in countries without binding EPR, " +
+     `${M.num(t.top5_no_binding_share_of_nb, 1)}% of it in five countries.`],
+    ["#ewaste", "The WEEE gap",
+     `${M.num(s.ewaste_uncovered_pct, 1)}% of reported e-waste arises in countries ` +
+     "without WEEE-specific EPR."],
+    ["#tool", "Country profile",
+     "EPR status, governance, and collection coverage of any country."],
   ];
-  document.getElementById("hero-stats").innerHTML = items.map(
-    ([num, lbl]) => `<div class="stat"><div class="num">${num}</div>
-                     <div class="lbl">${lbl}</div></div>`).join("");
+  document.getElementById("finding-grid").innerHTML = items.map(
+    ([href, title, text], i) => `<a class="finding" href="${href}" style="--i:${i}">
+       <h3>${title}</h3><p>${text}</p></a>`).join("");
+
+  document.getElementById("future-lede").textContent =
+    "Tiles are sized by projected 2050 municipal waste and colored by current EPR " +
+    `status. ${M.num(t.share_2050_no_binding, 1)}% of that waste will arise in countries ` +
+    `without binding EPR today, and ${M.num(t.top5_no_binding_share_of_nb, 1)}% of it in ` +
+    `five countries (${t.top5_no_binding.join(", ")}).`;
 }
 
 const EVIDENCE_NOTES = {
   gradient: "Locally weighted fits with bootstrap bands; the curves cross near a governance score of .4. Points are countries.",
   marginal: "Marginal association of EPR presence with the recycling share, from the interaction model (n = 119, HC3 standard errors).",
   specs: "400 alternative specifications; the estimate is positive in all of them and clearly significant in 37%. Filled points: p < .05.",
-  gate: "Segmented fit across 54 countries; the breakpoint near 96% coverage carries a bootstrap interval of 91 to 99 (shaded).",
+  gate: "Segmented fit across 54 countries; the break near 96% coverage carries a bootstrap interval of 91 to 99 (shaded). The break describes the sample and is not a threshold.",
 };
 
 function initEvidence() {
@@ -54,7 +75,7 @@ function initEvidence() {
 
 /* view name -> lazy initializer returning the charts it created */
 const INIT = {
-  overview: () => { heroStats(); return []; },
+  overview: () => [initStory(DATA)],
   map: () => [buildMap(DATA, DATA.geojson)],
   evidence: () => { initEvidence(); return viewCharts.evidence; },
   composition: () => [chartComposition(DATA, "chart-composition")],
@@ -81,20 +102,19 @@ function activate(view) {
 }
 
 function router() {
-  const view = (location.hash || "#overview").slice(1);
-  const alias = { overview: "overview", map: "map", evidence: "evidence",
-                  composition: "composition", future: "future",
-                  ewaste: "ewaste", tool: "tool" };
-  activate(alias[view] || "overview");
+  activate((location.hash || "#overview").slice(1));
 }
 
 async function main() {
-  const [countries, curves, treemap, specs, meta, geojson] = await Promise.all([
+  const [countries, curves, treemap, specs, meta, story, geojson] = await Promise.all([
     loadJSON("countries.json"), loadJSON("curves.json"), loadJSON("treemap.json"),
-    loadJSON("specs.json"), loadJSON("meta.json"), loadJSON("world.geojson"),
+    loadJSON("specs.json"), loadJSON("meta.json"), loadJSON("story.json"),
+    loadJSON("world.geojson"),
   ]);
-  Object.assign(DATA, { countries, curves, treemap, specs, meta, geojson });
+  Object.assign(DATA, { countries, curves, treemap, specs, meta, story, geojson });
+  echarts.registerMap("world", geojson);
 
+  findings();
   window.addEventListener("hashchange", router);
   window.addEventListener("resize", () =>
     Object.values(viewCharts).flat().forEach((c) => c && c.resize()));

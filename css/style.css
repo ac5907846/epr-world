@@ -51,7 +51,7 @@ main .view.active { display: block; animation: fadein .25s ease; }
 @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
 
 .hero {
-  padding: 4rem 6vw 3rem;
+  padding: 3rem 6vw 1.6rem;
   background: linear-gradient(180deg, var(--wash), #fff);
 }
 
@@ -118,11 +118,11 @@ section h2 { font-size: 1.5rem; margin-bottom: .6rem; }
 #country-card .streams span.off { background: var(--grid); color: var(--ink3); }
 
 .tool-grid { display: grid; grid-template-columns: 320px 1fr; gap: 1.6rem; }
-#tool select {
+#view-tool select {
   width: 100%; padding: .5rem .6rem; font-size: .95rem;
   border: 1px solid var(--rule); border-radius: 8px; margin: .4rem 0 1rem;
 }
-#tool label { font-size: .85rem; color: var(--ink3); }
+#view-tool label { font-size: .85rem; color: var(--ink3); }
 .tool-card {
   border: 1px solid var(--grid); border-left: 4px solid var(--rule);
   border-radius: 8px; padding: .7rem .9rem; margin-bottom: .7rem; font-size: .9rem;
@@ -132,7 +132,63 @@ section h2 { font-size: 1.5rem; margin-bottom: .6rem; }
 .tool-card.bad { border-left-color: var(--bad); }
 .tool-card .big { font-size: 1.25rem; font-weight: 700; }
 
+/* ---- landing figure: four steps in one chart, with a readout ---- */
+.story { padding: .4rem 6vw 1rem; }
+.story-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+}
+.story-steps { margin-bottom: 0; }
+.pill {
+  border: 1px solid var(--rule); background: #fff; color: var(--ink);
+  padding: .32rem .9rem; border-radius: 999px; cursor: pointer;
+  font-size: .82rem; min-width: 4.6rem;
+}
+.pill:hover { background: var(--wash); border-color: var(--ink3); }
+.story-progress { height: 2px; background: var(--grid); margin: .65rem 0 .5rem; }
+.story-progress i { display: block; height: 100%; width: 0; background: var(--petrol); }
+.story-body {
+  display: grid; grid-template-columns: minmax(0, 1fr) 290px; gap: 1.8rem;
+  align-items: start;
+}
+.story-chart { height: 440px; }
+/* Fixed heights: nothing below the readout moves when its text changes. */
+.readout { min-height: 440px; padding-top: .3rem; }
+.ro-title { font-size: .98rem; font-weight: 600; min-height: 2.9em; }
+.ro-num {
+  font-family: Georgia, "Times New Roman", serif; font-size: 3.6rem;
+  line-height: 1.05; white-space: nowrap; font-variant-numeric: tabular-nums;
+}
+.ro-unit { font-size: 1.3rem; margin-left: .35rem; }
+.ro-label { margin-top: .5rem; font-size: .95rem; min-height: 5.8em; }
+.ro-detail { margin-top: .5rem; font-size: .86rem; color: var(--ink2); min-height: 5.4em; }
+.ro-src { margin-top: .5rem; font-size: .8rem; color: var(--ink3); }
+.story-key {
+  margin-top: 1rem; display: flex; flex-direction: column; gap: .32rem;
+  font-size: .84rem;
+}
+.story-key i {
+  display: inline-block; width: .85rem; height: .85rem; border-radius: 3px;
+  margin-right: .5rem; vertical-align: -1px; border: 1px solid rgba(0, 0, 0, .28);
+}
+.readout.in .ro-title, .readout.in .ro-label,
+.readout.in .ro-detail, .readout.in .ro-src { animation: rise .5s ease both; }
+@keyframes rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+.finding {
+  animation: rise .5s ease both;
+  animation-delay: calc(var(--i, 0) * 70ms + 150ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
 @media (max-width: 900px) {
+  .story-body { grid-template-columns: 1fr; }
+  .readout { min-height: 0; }
+  .story-chart { height: 300px; }
   .map-wrap, .tool-grid { grid-template-columns: 1fr; }
   #topnav { padding: 0 2vw; }
   #topnav a { padding: .7rem .55rem .55rem; font-size: .84rem; }

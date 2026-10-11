@@ -19,10 +19,10 @@ function buildMap(DATA, geojson) {
 
   const VISUAL = {
     status: { type: "piecewise", pieces: [
-        { value: 3, label: "Law in force", color: "#1b56ad" },
-        { value: 2, label: "Policy approved", color: "#6f9bd6" },
-        { value: 1, label: "Draft or planning", color: "#bdd2ec" },
-        { value: 0, label: "No EPR scheme", color: "#d5d9e4" },
+        { value: 3, label: "Binding EPR", color: "#1b56ad" },
+        { value: 2, label: "Policy approved", color: "#6eaf8e" },
+        { value: 1, label: "Draft or planning", color: "#b7d9c5" },
+        { value: 0, label: "No EPR", color: "#d5d9e4" },
       ], left: 10, bottom: 10, textStyle: { color: "#494e5c" } },
     recycling: { type: "continuous", min: 0, max: 45, text: ["45%+", "0%"],
       inRange: { color: ["#f3f9f5", "#98ccab", "#0e7a43", "#07472a"] },
@@ -37,9 +37,9 @@ function buildMap(DATA, geojson) {
       tooltip: { formatter: (p) => {
         const c = DATA.countries[p.name];
         if (!c) return p.name;
-        const parts = [`<b>${c.name}</b>`, c.status || "no data"];
-        if (c.recycling != null) parts.push(`recycling ${c.recycling.toFixed(1)}%`);
-        if (c.governance != null) parts.push(`governance ${c.governance.toFixed(2)}`);
+        const parts = [`<b>${c.name}</b>`, statusLabel(c.status) || "no data"];
+        if (c.recycling != null) parts.push(`recycling ${M.num(c.recycling, 1)}%`);
+        if (c.governance != null) parts.push(`governance ${M.num(c.governance, 2)}`);
         return parts.join("<br>");
       } },
       visualMap: VISUAL[mode],
@@ -68,20 +68,20 @@ function buildMap(DATA, geojson) {
 }
 
 function fmt(v, suffix = "", dec = 1) {
-  return v == null || Number.isNaN(v) ? "no data" : (+v).toFixed(dec) + suffix;
+  return v == null || Number.isNaN(v) ? "no data" : M.num(+v, dec) + suffix;
 }
 
 function showCountry(DATA, iso) {
   const c = DATA.countries[iso];
   const el = document.getElementById("country-card");
   if (!c) { el.innerHTML = "<p class='hint'>No profile for this territory.</p>"; return; }
-  const pillColor = { "Law in force": "#1b56ad", "Policy approved": "#6f9bd6",
-    "Draft or planning": "#8fa8c8", "No EPR scheme": "#818697" }[c.status] || "#818697";
+  const pillColor = { "Law in force": "#1b56ad", "Policy approved": "#3f8a63",
+    "Draft or planning": "#5d9c7b", "No EPR scheme": "#818697" }[c.status] || "#818697";
   const streams = Object.entries(c.streams).map(([k, v]) =>
     `<span class="${v ? "" : "off"}">${k}</span>`).join("");
   el.innerHTML = `
     <h3>${c.name}</h3>
-    <span class="status-pill" style="background:${pillColor}">${c.status || "no data"}</span>
+    <span class="status-pill" style="background:${pillColor}">${statusLabel(c.status) || "no data"}</span>
     <dl>
       <dt>Income group</dt><dd>${c.income || "n/a"}</dd>
       <dt>Recycling</dt><dd>${fmt(c.recycling, "%")}</dd>

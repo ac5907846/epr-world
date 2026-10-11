@@ -146,4 +146,29 @@ meta = {
     "built": "2026-08-30",
 }
 dump(meta, "meta.json")
+
+# ---------- story.json (the four steps of the landing view) ----------
+# Headline values of the revised article. They come from the analysis behind
+# the graphical abstract of Revision 1, which recomputes each value from the
+# data and stops if one differs from the text of the article.
+GA = HERE.parent / "07_Revision 1" / "analysis" / "06_graphical_abstract" / "results"
+ga = json.loads((GA / "graphical_abstract.json").read_text(encoding="utf-8"))
+sample = pd.read_csv(GA / "scatter.csv")
+for _, row in sample.iterrows():          # the app must show the same countries
+    c = countries[row["iso3c"]]
+    assert abs(c["governance"] - row["governance"]) < .002, row["iso3c"]
+    assert abs(c["recycling"] - row["recycling"]) < .01, row["iso3c"]
+    assert (row["group"] == "Binding EPR") == (c["binding"] == 1), row["iso3c"]
+n_class = {"binding": sum(c["binding"] == 1 for c in countries.values()),
+           "non_binding": sum(c["epr"] == 1 and c["binding"] != 1 for c in countries.values()),
+           "none": sum(c["epr"] == 0 for c in countries.values())}
+assert n_class == {k: ga["map"][k] for k in n_class}, n_class
+dump({
+    "map": ga["map"],
+    "test": ga["test"],
+    "check": ga["check"],
+    "outlook": ga["outlook"],
+    "sample": sample["iso3c"].tolist(),
+    "ewaste_uncovered_pct": s16["share_uncovered_pct"],
+}, "story.json")
 print("done")

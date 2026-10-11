@@ -1,6 +1,6 @@
-/* EPR readiness check: for a selected country, show the two enabling
-   conditions (governance, collection) and the model-implied EPR margin,
-   plus a peer chart placing the country on the governance curve. */
+/* Country profile: for a selected country, show its governance, its
+   collection coverage and the pooled association of EPR with recycling at
+   that level of governance, plus a chart placing the country on the curve. */
 
 function initTool(DATA) {
   const sel = document.getElementById("tool-country");
@@ -24,32 +24,30 @@ function initTool(DATA) {
     const gate = DATA.meta.gate_break;
     const cards = [];
 
-    const govClass = c.governance > .3 ? "ok" : c.governance > -.3 ? "warn" : "bad";
-    cards.push(`<div class="tool-card ${govClass}">
-      <div class="big">${c.governance.toFixed(2)}</div>
-      Governance (WGI composite). The EPR margin turns positive above about .3.
+    cards.push(`<div class="tool-card">
+      <div class="big">${M.num(c.governance, 2)}</div>
+      Governance (WGI composite). In the pooled model the association of EPR
+      with recycling turns positive above about .3.
       </div>`);
 
     if (c.collection == null) {
-      cards.push(`<div class="tool-card warn"><div class="big">no data</div>
-        Collection coverage is unreported; the study finds recycling responds
-        only once coverage nears ${gate}%.</div>`);
+      cards.push(`<div class="tool-card"><div class="big">no data</div>
+        Collection coverage is not reported.</div>`);
     } else {
-      const colClass = c.collection >= gate ? "ok" :
-                       c.collection >= 80 ? "warn" : "bad";
-      cards.push(`<div class="tool-card ${colClass}">
+      cards.push(`<div class="tool-card">
         <div class="big">${c.collection.toFixed(0)}%</div>
-        Collection coverage, against the ${gate}% gate the study identifies.</div>`);
+        Collection coverage. In the pooled data recycling rises steeply only
+        above about ${gate}% coverage; this describes the sample and is not a
+        threshold.</div>`);
     }
 
-    const mClass = m > 2 ? "ok" : m > -2 ? "warn" : "bad";
-    cards.push(`<div class="tool-card ${mClass}">
-      <div class="big">${m > 0 ? "+" : ""}${m.toFixed(1)} pp</div>
-      Model-implied recycling margin of having EPR at this governance level
-      (association, not a causal effect).</div>`);
+    cards.push(`<div class="tool-card">
+      <div class="big">${M.num(m, 1)} pp</div>
+      Pooled association of EPR with recycling at this level of governance
+      (not a causal effect; it does not hold within income groups).</div>`);
 
     const statusLine = c.epr
-      ? `${c.name} already operates EPR (${c.status}).`
+      ? `${c.name} has an EPR scheme (${statusLabel(c.status)}).`
       : `${c.name} has no EPR scheme in the inventory.`;
     cards.push(`<div class="tool-card"><div>${statusLine}</div></div>`);
     document.getElementById("tool-cards").innerHTML = cards.join("");
@@ -61,7 +59,7 @@ function initTool(DATA) {
       xAxis: { name: "Governance (WGI)", nameLocation: "middle", nameGap: 28,
         axisLine: { lineStyle: { color: "#c9cdd8" } }, axisTick: { show: false },
         axisLabel: { color: "#494e5c" }, splitLine: { show: false } },
-      yAxis: { name: "EPR margin (pp of recycling)", nameLocation: "middle",
+      yAxis: { name: "EPR association with recycling (pp)", nameLocation: "middle",
         nameGap: 40, axisLine: { lineStyle: { color: "#c9cdd8" } },
         axisTick: { show: false }, axisLabel: { color: "#494e5c" },
         splitLine: { lineStyle: { color: "#e9ebf1" } } },

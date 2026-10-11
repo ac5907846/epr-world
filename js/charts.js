@@ -9,10 +9,21 @@ const C = {
 };
 const STATUS_COLORS = {
   "Law in force": C.petrol,
-  "Policy approved": C.petrolMid,
-  "Draft or planning": C.petrolLight,
+  "Policy approved": "#6eaf8e",
+  "Draft or planning": "#b7d9c5",
+  "Weaker commitment": "#6eaf8e",
   "No EPR scheme": "#d5d9e4",
 };
+/* The data keep the category names of the first analysis; the article now
+   calls them as follows. */
+const STATUS_LABEL = {
+  "Law in force": "Binding EPR",
+  "Weaker commitment": "Non-binding EPR",
+  "No EPR scheme": "No EPR",
+};
+function statusLabel(s) { return STATUS_LABEL[s] || s; }
+/* Points and marks come in one after the other when a chart is first drawn. */
+const stagger = (ms) => (i) => (M.reduced ? 0 : i * ms);
 const AXIS = {
   axisLine: { lineStyle: { color: C.rule } },
   axisTick: { show: false },
@@ -54,9 +65,10 @@ function chartGradient(DATA, el) {
   const lw = DATA.curves.lowess_epr, ln = DATA.curves.lowess_none;
   ch.setOption({
     grid: baseGrid(),
-    tooltip: { formatter: (p) => p.name ? `${p.name}<br>governance ${p.value[0].toFixed(2)}, recycling ${p.value[1].toFixed(1)}%` : "" },
+    tooltip: { formatter: (p) => p.name ? `${p.name}<br>governance ${M.num(p.value[0], 2)}, recycling ${M.num(p.value[1], 1)}%` : "" },
     xAxis: { name: "Governance (WGI)", min: -2, max: 2.2,
-             nameLocation: "middle", nameGap: 28, ...AXIS },
+             nameLocation: "middle", nameGap: 28, ...AXIS,
+             axisLabel: { color: C.ink2, showMaxLabel: false } },
     yAxis: { name: "Recycling (% of MSW)", min: -5, max: 60,
              nameLocation: "middle", nameGap: 40, ...AXIS },
     legend: { top: 4, data: ["EPR present", "No EPR"] },
@@ -64,8 +76,10 @@ function chartGradient(DATA, el) {
       ...bandSeries(lw.x, lw.lo, lw.hi, C.petrol),
       ...bandSeries(ln.x, ln.lo, ln.hi, C.ink3),
       { name: "EPR present", type: "scatter", data: pts(1), symbolSize: 7,
+        animationDelay: stagger(6),
         itemStyle: { color: C.petrol, opacity: .75 } },
       { name: "No EPR", type: "scatter", data: pts(0), symbolSize: 7,
+        animationDelay: stagger(6),
         itemStyle: { color: "#fff", borderColor: C.ink3, borderWidth: 1.2 } },
       { type: "line", data: lw.x.map((v, i) => [v, lw.fit[i]]), symbol: "none",
         lineStyle: { color: C.petrol, width: 3 }, tooltip: { show: false } },
@@ -83,7 +97,7 @@ function chartMarginal(DATA, el) {
     grid: baseGrid(),
     tooltip: { trigger: "axis", formatter: (ps) => {
       const p = ps.find((q) => q.seriesName === "EPR margin");
-      return p ? `governance ${(+p.value[0]).toFixed(2)}<br>EPR margin ${(+p.value[1]).toFixed(1)} pp` : "";
+      return p ? `governance ${M.num(+p.value[0], 2)}<br>EPR margin ${M.num(+p.value[1], 1)} pp` : "";
     } },
     xAxis: { name: "Governance (WGI)", nameLocation: "middle", nameGap: 28, ...AXIS },
     yAxis: { name: "EPR association with recycling (pp)", nameLocation: "middle", nameGap: 42, ...AXIS },
@@ -108,7 +122,7 @@ function chartSpecs(DATA, el) {
     grid: baseGrid(),
     tooltip: { formatter: (p) => {
       const i = p.dataIndex;
-      return `spec ${i + 1} of ${s.coef.length}<br>coefficient ${s.coef[i].toFixed(2)}` +
+      return `spec ${i + 1} of ${s.coef.length}<br>coefficient ${M.num(s.coef[i], 2)}` +
         `<br>${s.epr_var[i]} EPR, ${s.gov_var[i].replaceAll("_", " ")}, sample: ${s.sample[i].replaceAll("_", " ")}`;
     } },
     xAxis: { name: "Specifications, sorted by coefficient", nameLocation: "middle",
@@ -123,8 +137,10 @@ function chartSpecs(DATA, el) {
                    x2: api.coord([api.value(0), api.value(2)])[0],
                    y2: api.coord([api.value(0), api.value(2)])[1] },
           style: { stroke: C.grid, lineWidth: 1 } }),
+        animationDelay: stagger(3),
         data: idx.map((i) => [i, s.lo[i], s.hi[i]]) },
       { type: "scatter", data: idx.map((i) => [i, s.coef[i]]), symbolSize: 4,
+        animationDelay: stagger(3),
         itemStyle: { color: (p) => (s.sig[p.dataIndex] ? C.petrol : "#c3c8d4") } },
       { type: "line", data: [[0, 0], [s.coef.length - 1, 0]], symbol: "none",
         silent: true, lineStyle: { color: C.rule } },
@@ -143,11 +159,11 @@ function chartGate(DATA, el) {
     epr: g.epr_present ? g.epr_present[i] : null }));
   ch.setOption({
     grid: baseGrid(),
-    tooltip: { formatter: (p) => p.name ? `${p.name}<br>collection ${p.value[0].toFixed(0)}%, recycling ${p.value[1].toFixed(1)}%` : "" },
+    tooltip: { formatter: (p) => p.name ? `${p.name}<br>collection ${p.value[0].toFixed(0)}%, recycling ${M.num(p.value[1], 1)}%` : "" },
     xAxis: { name: "Collection coverage (% of population)", nameLocation: "middle", nameGap: 28, ...AXIS },
     yAxis: { name: "Recycling (% of MSW)", nameLocation: "middle", nameGap: 40, ...AXIS },
     series: [
-      { type: "scatter", data: pts, symbolSize: 8,
+      { type: "scatter", data: pts, symbolSize: 8, animationDelay: stagger(12),
         itemStyle: { color: (p) => (pts[p.dataIndex].epr ? C.petrol : "#fff"),
           borderColor: C.ink3,
           borderWidth: (p) => (pts[p.dataIndex].epr ? 0 : 1.2), opacity: .8 } },
@@ -158,7 +174,7 @@ function chartGate(DATA, el) {
         markLine: { silent: true, symbol: "none",
           lineStyle: { color: C.olive, type: "dashed" },
           data: [{ xAxis: meta.break_pct }],
-          label: { formatter: `gate near ${meta.break_pct}%`, color: C.olive } } },
+          label: { formatter: `break near ${meta.break_pct}%`, color: C.ink } } },
     ],
   });
   return ch;
@@ -204,7 +220,7 @@ function chartComposition(DATA, el) {
         const r = cum[idx];
         return `GDP pc ~$${Math.round(r.x).toLocaleString()}<br>` +
           bands.map(([, name, color], bi) =>
-            `<span style="color:${color}">&#9632;</span> ${name}: ${r.raw[bi].toFixed(1)}%`)
+            `<span style="color:${color}">&#9632;</span> ${name}: ${M.num(r.raw[bi], 1)}%`)
           .join("<br>");
       } },
     legend: { top: 2, textStyle: { color: C.ink2 }, data: bands.map(([, n]) => n) },
@@ -218,17 +234,21 @@ function chartComposition(DATA, el) {
 
 function chartTreemap(DATA, el) {
   const ch = echarts.init(document.getElementById(el));
+  /* A tile that groups the rest of a region carries its status in its name
+     ("..., law in force"); the color and the tooltip say it, in today's terms. */
   const tiles = DATA.treemap.tiles.map((t) => ({
-    name: t.country, value: t.msw_2050_t,
+    name: t.country.replace(/, (law in force|weaker commitment|no epr scheme)$/, ""),
+    value: t.msw_2050_t,
     itemStyle: { color: STATUS_COLORS[t.status_cat] || "#d5d9e4" },
     status: t.status_cat,
   }));
   ch.setOption({
     tooltip: { formatter: (p) =>
-      `${p.name}<br>${(p.value / 1e6).toFixed(1)} Mt projected in 2050<br>${p.data.status}` },
+      `${p.name}<br>${M.num(p.value / 1e6, 1)} Mt projected in 2050<br>${statusLabel(p.data.status)}` },
     series: [{ type: "treemap", roam: false, nodeClick: false,
       breadcrumb: { show: false }, data: tiles,
-      label: { color: "#fff", fontSize: 11,
+      label: { color: "#fff", fontSize: 11, textBorderColor: "rgba(0,0,0,.35)",
+        textBorderWidth: 2,
         formatter: (p) => (p.value > 2.2e7 ? p.name : "") },
       itemStyle: { borderColor: "#fff", borderWidth: 1.5, gapWidth: 1.5 } }],
   });
@@ -237,7 +257,7 @@ function chartTreemap(DATA, el) {
 
 function chartShares(DATA, el) {
   const ch = echarts.init(document.getElementById(el));
-  const order = ["Law in force", "Policy approved", "Draft or planning", "No EPR scheme"];
+  const order = ["Law in force", "Weaker commitment", "No EPR scheme"];
   const years = [...new Set(DATA.treemap.shares.map((s) => s.year))].sort();
   ch.setOption({
     grid: { left: 60, right: 120, top: 10, bottom: 25 },
@@ -246,8 +266,9 @@ function chartShares(DATA, el) {
       textStyle: { fontSize: 11, color: C.ink2 } },
     xAxis: { max: 100, ...AXIS, axisLabel: { formatter: "{value}%" } },
     yAxis: { type: "category", data: years.map(String), ...AXIS },
-    series: order.map((st) => ({
-      name: st, type: "bar", stack: "s", barWidth: 26,
+    series: order.map((st, k) => ({
+      name: statusLabel(st), type: "bar", stack: "s", barWidth: 26,
+      animationDelay: M.reduced ? 0 : k * 250,
       itemStyle: { color: STATUS_COLORS[st] },
       data: years.map((y) => {
         const row = DATA.treemap.shares.find((s) => s.year === y && s.status === st);
@@ -267,8 +288,8 @@ function chartEwaste(DATA, el) {
   const size = (d) => Math.max(4, Math.sqrt(d.t / 1e6) * 26);
   ch.setOption({
     grid: baseGrid(),
-    tooltip: { formatter: (p) => `${p.name}<br>${(+p.value[1]).toFixed(1)} kg per capita, ` +
-      `${(p.data.t / 1e6).toFixed(2)} Mt total` },
+    tooltip: { formatter: (p) => `${p.name}<br>${M.num(+p.value[1], 1)} kg per capita, ` +
+      `${M.num(p.data.t / 1e6, 2)} Mt total` },
     legend: { top: 4 },
     xAxis: { type: "log", name: "GDP per capita (USD, log scale)",
              min: 250, max: 150000, nameLocation: "middle", nameGap: 28, ...AXIS },
@@ -276,9 +297,11 @@ function chartEwaste(DATA, el) {
              min: .1, max: 60, nameLocation: "middle", nameGap: 42, ...AXIS },
     series: [
       { name: "WEEE EPR present", type: "scatter", data: mk(1),
+        animationDelay: stagger(5),
         symbolSize: (v, p) => size(p.data),
         itemStyle: { color: C.petrol, opacity: .6 } },
       { name: "No WEEE EPR", type: "scatter", data: mk(0),
+        animationDelay: stagger(5),
         symbolSize: (v, p) => size(p.data),
         itemStyle: { color: "rgba(0,0,0,0)", borderColor: C.bad, borderWidth: 1.6 } },
     ],
