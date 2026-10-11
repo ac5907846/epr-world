@@ -211,8 +211,8 @@ dump({
 # ---------- sources.json and adoption_sources.csv ----------
 # The six sources of data of the article (its Table 1) with the page of each,
 # and the legal instrument and the sources behind every adoption year (Table
-# S4 of the supplementary materials; the file is made by
-# 07_Revision 1/_source/_make_adoption_sources.py).
+# S1 of the supplementary materials and its references; both files are made
+# by 07_Revision 1/_source/_make_adoption_sources.py).
 R1 = HERE.parent / "07_Revision 1"
 table1 = json.loads((R1 / "_source" / "_tables_R1.json").read_text(encoding="utf-8"))["Table 1"]
 PAGES = {
@@ -225,7 +225,7 @@ PAGES = {
     "Human Development Report": "https://hdr.undp.org/data-center/documentation-and-downloads",
     "Eurostat circular economy indicators":
         "https://ec.europa.eu/eurostat/web/circular-economy/database",
-    "EPR adoption dataset": None,          # listed on the page itself
+    "Multiple sources, detailed in Table S1": None,     # listed on the page itself
 }
 datasets = []
 for name, used, n, years in table1["rows"]:
@@ -233,15 +233,18 @@ for name, used, n, years in table1["rows"]:
     datasets.append({"name": short, "used": used, "countries": str(n), "years": years,
                      "url": PAGES[short]})
 assert len(datasets) == len(PAGES)
-inst_file = R1 / "analysis" / "05_program_age" / "results" / "adoption_instruments.csv"
-inst = pd.read_csv(inst_file, dtype=str).fillna("")
+AGE = R1 / "analysis" / "05_program_age" / "results"
+inst = pd.read_csv(AGE / "adoption_instruments.csv", dtype=str).fillna("")
+refs = pd.read_csv(AGE / "adoption_references.csv", dtype=str).fillna("").set_index("cite")
 adoption = {}
 for _, row in inst.iterrows():
     assert row["iso3c"] in countries, row["iso3c"]
     adoption.setdefault(row["iso3c"], []).append(
         {"kind": row["kind"], "year": row["year"], "instrument": row["instrument"],
-         "sources": row["sources"].split(" ; ")})
+         "refs": [{"cite": c, "reference": refs.loc[c, "reference"],
+                   "urls": refs.loc[c, "addresses"].split(" ; ")} for c in row["cites"].split(" ; ")]})
 dump({"datasets": datasets, "adoption": adoption}, "sources.json")
-shutil.copyfile(inst_file, DATA / "adoption_sources.csv")
-print("data/adoption_sources.csv")
+shutil.copyfile(AGE / "adoption_instruments.csv", DATA / "adoption_sources.csv")
+shutil.copyfile(AGE / "adoption_references.csv", DATA / "adoption_references.csv")
+print("data/adoption_sources.csv, data/adoption_references.csv")
 print("done")

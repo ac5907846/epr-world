@@ -142,8 +142,8 @@ section h2 { font-size: 1.5rem; margin-bottom: .6rem; }
   color: var(--petrol); text-decoration: underline; text-underline-offset: 2px;
   overflow-wrap: break-word;
 }
-.src-table td.links a, .tool-card .src-links a { display: block; overflow-wrap: anywhere; }
-.src-table td.links { min-width: 15rem; }
+.src-table td.links .src-ref, .tool-card .src-links .src-ref { display: block; }
+.src-table td.links { min-width: 13rem; }
 .src-tools { display: flex; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: .6rem; }
 .src-tools input {
   padding: .4rem .6rem; border: 1px solid var(--rule); border-radius: 8px;
