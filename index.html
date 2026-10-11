@@ -5,16 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>EPR World: extended producer responsibility on paper and in practice</title>
 <meta name="description" content="Interactive companion to a global assessment of extended producer responsibility, built on the What a Waste 3.0 database.">
-<link rel="preload" href="data/world.geojson?v=3" as="fetch" crossorigin>
-<link rel="preload" href="data/countries.json?v=3" as="fetch" crossorigin>
+<link rel="preload" href="data/world.geojson?v=4" as="fetch" crossorigin>
+<link rel="preload" href="data/countries.json?v=4" as="fetch" crossorigin>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='7' fill='%231b56ad'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="css/style.css?v=3">
+<link rel="stylesheet" href="css/style.css?v=4">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
 </head>
 <body>
 
 <nav id="topnav">
-  <span class="brand">EPR World</span>
+  <a class="brand" id="brand" href="./" aria-label="EPR World, main page">
+    <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+      <g fill="none" stroke-width="4.2" transform="rotate(-90 12 12)">
+        <circle cx="12" cy="12" r="8.4" stroke="#1b56ad" stroke-dasharray="23.6 29.2"/>
+        <circle cx="12" cy="12" r="8.4" stroke="#6eaf8e" stroke-dasharray="8.5 44.3" stroke-dashoffset="-24.8"/>
+        <circle cx="12" cy="12" r="8.4" stroke="#c3c8d4" stroke-dasharray="17.1 35.7" stroke-dashoffset="-34.5"/>
+      </g>
+    </svg>
+    <span class="brand-epr">EPR</span><span class="brand-world">World</span>
+  </a>
   <div class="tabs" id="tabs">
     <a href="#overview" data-view="overview" class="active">Overview</a>
     <a href="#map" data-view="map">World map</a>
@@ -129,11 +138,11 @@
 
 </main>
 
-<script src="js/motion.js?v=3"></script>
-<script src="js/charts.js?v=3"></script>
-<script src="js/map.js?v=3"></script>
-<script src="js/tool.js?v=3"></script>
-<script src="js/story.js?v=3"></script>
-<script src="js/app.js?v=3"></script>
+<script src="js/motion.js?v=4"></script>
+<script src="js/charts.js?v=4"></script>
+<script src="js/map.js?v=4"></script>
+<script src="js/tool.js?v=4"></script>
+<script src="js/story.js?v=4"></script>
+<script src="js/app.js?v=4"></script>
 </body>
 </html>

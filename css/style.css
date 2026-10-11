@@ -31,7 +31,15 @@ body {
   backdrop-filter: blur(6px);
   border-bottom: 1px solid var(--grid);
 }
-#topnav .brand { font-weight: 700; color: var(--petrol); margin-right: 1rem; }
+#topnav a.brand {
+  display: inline-flex; align-items: center; gap: .5rem; margin-right: 1rem;
+  padding: .45rem 0; border-bottom: 0; font-size: 1.08rem; letter-spacing: .01em;
+  white-space: nowrap;
+}
+#topnav a.brand .brand-epr { font-weight: 800; color: var(--petrol); }
+#topnav a.brand .brand-world { font-weight: 500; color: var(--ink); margin-left: -.18rem; }
+#topnav a.brand svg { display: block; transition: transform .5s ease; }
+#topnav a.brand:hover svg { transform: rotate(120deg); }
 #topnav .tabs { display: flex; gap: .2rem; flex-wrap: wrap; }
 #topnav a {
   color: var(--ink2); text-decoration: none; font-size: .92rem;

@@ -4,7 +4,7 @@
 
 const DATA = {};
 const viewCharts = {};
-const VERSION = 3;          // bump with every release: the host caches hard
+const VERSION = 4;          // bump with every release: the host caches hard
 
 async function loadJSON(name) {
   const res = await fetch("data/" + name + "?v=" + VERSION);
@@ -92,6 +92,13 @@ async function main() {
   echarts.registerMap("world", geojson);
 
   ledes();
+  /* the logo leads to the main page: the address without a hash */
+  document.getElementById("brand").addEventListener("click", (e) => {
+    e.preventDefault();
+    history.pushState(null, "", location.pathname + location.search);
+    router();
+  });
+  window.addEventListener("popstate", router);
   window.addEventListener("hashchange", router);
   window.addEventListener("resize", () =>
     Object.values(viewCharts).flat().forEach((c) => c && c.resize()));

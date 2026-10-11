@@ -13,7 +13,7 @@ function initStory(DATA) {
   const KEY = { binding: "Binding EPR", non: "Non-binding EPR", none: "No EPR" };
   const cls = (c) => (c.binding === 1 ? "binding" : c.epr === 1 ? "non" : "none");
   const inc = (c) => (c.income === "HIC" ? "High income" : "Low and middle income");
-  const MOVE = M.reduced ? 0 : 1100;
+  const MOVE = M.reduced ? 0 : 750;
   const axis = {
     axisLine: { lineStyle: { color: RULE } }, axisTick: { show: false },
     axisLabel: { color: INK }, nameTextStyle: { color: INK },
@@ -52,7 +52,7 @@ function initStory(DATA) {
       data: fit[key].governance.map((g, i) => [g, fit[key].recycling[i]]),
       lineStyle: { color, width: 3, type: dash ? "dashed" : "solid" },
       endLabel: { show: true, formatter: key, color: INK, fontSize: 12 },
-      animationDuration: M.reduced ? 0 : 900, animationDelay: MOVE * .7,
+      animationDuration: M.reduced ? 0 : 550, animationDelay: MOVE * .7,
     });
     return { ...base,
       grid: { left: 58, right: 118, top: 20, bottom: 48 },
@@ -99,7 +99,7 @@ function initStory(DATA) {
                axisLabel: { color: INK, fontSize: 13 } },
       series: [
         { type: "custom", silent: true, z: 2,
-          animationDuration: M.reduced ? 0 : 700, animationDelay: MOVE * .6,
+          animationDuration: M.reduced ? 0 : 450, animationDelay: MOVE * .6,
           renderItem: (params, api) => {
             const i = api.value(2), lo = api.value(0), hi = api.value(1);
             const a = api.coord([Math.max(lo, XMIN), i]);
@@ -203,7 +203,7 @@ function initStory(DATA) {
   $("story-key").innerHTML = Object.keys(KEY).map((k) =>
     `<span><i style="background:${COL[k]}"></i>${KEY[k]}</span>`).join("");
 
-  const STEP_MS = 7000;
+  const STEP_MS = 4000;
   let cur = -1, playing = false, t0 = 0, elapsed = 0;
 
   function show(k) {
@@ -220,7 +220,7 @@ function initStory(DATA) {
     ro.querySelector(".ro-label").textContent = s.label;
     ro.querySelector(".ro-detail").textContent = s.detail;
     ro.querySelector(".ro-src").textContent = s.source;
-    M.count(ro.querySelector(".ro-n"), s.value, s.dec, 1000);
+    M.count(ro.querySelector(".ro-n"), s.value, s.dec, 650);
     elapsed = 0;
     t0 = performance.now();
   }
