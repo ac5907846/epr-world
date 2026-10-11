@@ -2,6 +2,8 @@
    instrument and the sources behind the adoption year of each EPR scheme
    (Table 1 of the article and Table S4 of its supplementary materials). */
 
+const ARCHIVED = /^https?:\/\/web\.archive\.org\/web\/\d+\//;    // an archived copy of a page
+
 function esc(s) {
   return String(s).replace(/[&<>"]/g, (c) =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -12,12 +14,11 @@ function esc(s) {
 function sourceLink(url) {
   let label = url;
   try {
-    const archived = /^https?:\/\/web\.archive\.org\/web\/\d+\//;
-    const u = new URL(url.replace(archived, ""));
+    const u = new URL(url.replace(ARCHIVED, ""));
     const last = decodeURIComponent(u.pathname).split("/").filter(Boolean).pop() || "";
     label = u.hostname.replace(/^www\./, "") +
       (last ? " / " + (last.length > 36 ? last.slice(0, 34) + "…" : last) : "") +
-      (archived.test(url) ? " (archived copy)" : "");
+      (ARCHIVED.test(url) ? " (archived copy)" : "");
   } catch (e) { /* the address stays its own label */ }
   return `<a href="${esc(url)}" target="_blank" rel="noopener" title="${esc(url)}">${esc(label)}</a>`;
 }
@@ -48,7 +49,8 @@ function initSources(DATA) {
     let instruments = 0;
     const html = shown.map((e) => e.rows.map((r, k) => {
       instruments += 1;
-      r.sources.forEach((u) => links.add(u));
+      /* a document listed with its address and with an archived copy counts once */
+      r.sources.forEach((u) => links.add(u.replace(ARCHIVED, "")));
       return `<tr><td>${k ? "" : esc(e.name)}</td><td class="num">${esc(r.year)}</td>
         <td>${esc(r.instrument)}</td>
         <td class="links">${r.sources.map(sourceLink).join("")}</td></tr>`;
