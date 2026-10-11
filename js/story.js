@@ -171,14 +171,14 @@ function prepareStory(S) {
       label: `of ${S.map.countries} countries and economies have an EPR scheme`,
       detail: `${S.map.binding} binding, ${S.map.non_binding} non-binding, ` +
               `${S.map.none} without a scheme`,
-      source: "Figure 1 and Table 1 of the article" },
+      source: "Figure 1 and Table 2 of the article" },
     { button: "Governance", title: "Recycling against governance",
       option: scatterOption, value: T.binding_x_governance.coef, dec: 1, unit: "points",
       label: "of recycling per unit of governance: the interaction of binding EPR " +
              `with governance (${M.pval(T.binding_x_governance.p)}, n = ${T.n})`,
       detail: `EPR presence alone: ${M.num(T.epr_alone.coef, 1)} points ` +
               `(${M.pval(T.epr_alone.p)})`,
-      source: "Table 2 and Figure 4 of the article" },
+      source: "Table 3 and Figure 4 of the article" },
     { button: "Income groups", title: "The interaction within income groups",
       option: groupsOption, value: G["Low and middle income"].coef, dec: 1, unit: "points",
       label: "the same interaction among low- and middle-income countries " +
@@ -186,7 +186,7 @@ function prepareStory(S) {
       detail: `High-income countries: ${M.num(G["High income"].coef, 1)} ` +
               `(${M.pval(G["High income"].p)}, n = ${G["High income"].n}). ` +
               "Filled marker: p < .05.",
-      source: "Table 4 of the article" },
+      source: "Table 5 of the article" },
     { button: "2050", title: "Municipal waste projected for 2050",
       option: wasteOption, value: O.share_2050_without_binding_epr_pct, dec: 1, unit: "%",
       label: "of the municipal waste projected for 2050 arises in countries " +
