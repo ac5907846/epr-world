@@ -194,7 +194,7 @@ function prepareStory(S) {
       detail: `Waste grows from ${M.num(O.msw_2022_bn_t, 2)} to ` +
               `${M.num(O.msw_2050_bn_t, 2)} billion tonnes; low- and lower-middle-income ` +
               `countries account for ${O.low_and_lower_middle_pct}% of the growth`,
-      source: "Figure 10 and Table S5 of the article" },
+      source: "Figure 10 and Table S8 of the article" },
   ];
 
   /* ---- controls ---- */
