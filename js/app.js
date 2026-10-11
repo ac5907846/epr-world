@@ -11,7 +11,7 @@
 
 const DATA = {};
 const viewCharts = {};
-const VERSION = 7;          // bump with every release: the host caches hard
+const VERSION = 8;          // bump with every release: the host caches hard
 const ECHARTS = "https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js";
 
 async function loadJSON(name) {
@@ -90,9 +90,9 @@ function load() {
                         : Promise.resolve();
   ready.rest = after.then(() => Promise.all([
     loadJSON("countries.json"), loadJSON("curves.json"), loadJSON("treemap.json"),
-    loadJSON("specs.json"), loadJSON("meta.json"), ready.chart,
-  ])).then(([countries, curves, treemap, specs, meta]) => {
-    Object.assign(DATA, { countries, curves, treemap, specs, meta });
+    loadJSON("specs.json"), loadJSON("meta.json"), loadJSON("sources.json"), ready.chart,
+  ])).then(([countries, curves, treemap, specs, meta, sources]) => {
+    Object.assign(DATA, { countries, curves, treemap, specs, meta, sources });
     ledes();
   });
 }
@@ -106,6 +106,7 @@ const INIT = {
   future: ["rest", () => [chartTreemap(DATA, "chart-treemap"),
                           chartShares(DATA, "chart-shares")]],
   ewaste: ["rest", () => [chartEwaste(DATA, "chart-ewaste")]],
+  sources: ["rest", () => { initSources(DATA); return []; }],
   tool: ["rest", () => [initTool(DATA)]],
 };
 const initialized = new Set();

@@ -49,6 +49,7 @@ function initTool(DATA) {
       ? `${c.name} has an EPR scheme (${statusLabel(c.status)}).`
       : `${c.name} has no EPR scheme in the inventory.`;
     cards.push(`<div class="tool-card"><div>${statusLine}</div></div>`);
+    cards.push(instrumentCard(DATA, iso));     // the legal instrument and its sources
     document.getElementById("tool-cards").innerHTML = cards.join("");
 
     const mc = DATA.curves.marginal;

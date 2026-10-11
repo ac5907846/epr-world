@@ -208,4 +208,40 @@ dump({
     "sample": sample["iso3c"].tolist(),
     "ewaste_uncovered_pct": s16["share_uncovered_pct"],
 }, "story.json")
+# ---------- sources.json and adoption_sources.csv ----------
+# The six sources of data of the article (its Table 1) with the page of each,
+# and the legal instrument and the sources behind every adoption year (Table
+# S4 of the supplementary materials; the file is made by
+# 07_Revision 1/_source/_make_adoption_sources.py).
+R1 = HERE.parent / "07_Revision 1"
+table1 = json.loads((R1 / "_source" / "_tables_R1.json").read_text(encoding="utf-8"))["Table 1"]
+PAGES = {
+    "What a Waste 3.0":
+        "https://datacatalog.worldbank.org/search/dataset/0039597/what-a-waste-global-database",
+    "World Development Indicators":
+        "https://databank.worldbank.org/source/world-development-indicators",
+    "Worldwide Governance Indicators":
+        "https://www.worldbank.org/en/publication/worldwide-governance-indicators",
+    "Human Development Report": "https://hdr.undp.org/data-center/documentation-and-downloads",
+    "Eurostat circular economy indicators":
+        "https://ec.europa.eu/eurostat/web/circular-economy/database",
+    "EPR adoption dataset": None,          # listed on the page itself
+}
+datasets = []
+for name, used, n, years in table1["rows"]:
+    short = name.split(" (")[0]
+    datasets.append({"name": short, "used": used, "countries": str(n), "years": years,
+                     "url": PAGES[short]})
+assert len(datasets) == len(PAGES)
+inst_file = R1 / "analysis" / "05_program_age" / "results" / "adoption_instruments.csv"
+inst = pd.read_csv(inst_file, dtype=str).fillna("")
+adoption = {}
+for _, row in inst.iterrows():
+    assert row["iso3c"] in countries, row["iso3c"]
+    adoption.setdefault(row["iso3c"], []).append(
+        {"kind": row["kind"], "year": row["year"], "instrument": row["instrument"],
+         "sources": row["sources"].split(" ; ")})
+dump({"datasets": datasets, "adoption": adoption}, "sources.json")
+shutil.copyfile(inst_file, DATA / "adoption_sources.csv")
+print("data/adoption_sources.csv")
 print("done")

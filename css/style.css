@@ -126,6 +126,34 @@ section h2 { font-size: 1.5rem; margin-bottom: .6rem; }
 .tool-card.bad { border-left-color: var(--bad); }
 .tool-card .big { font-size: 1.25rem; font-weight: 700; }
 
+/* ---- sources view ---- */
+#view-sources h3 { font-size: 1.1rem; margin: .4rem 0 .6rem; }
+.src-scroll { overflow-x: auto; }
+.src-table { width: 100%; border-collapse: collapse; font-size: .88rem; margin-bottom: 1.6rem; }
+.src-table th {
+  text-align: left; font-weight: 600; color: var(--ink2);
+  border-bottom: 2px solid var(--rule); padding: .45rem .9rem .45rem 0;
+}
+.src-table td {
+  vertical-align: top; border-bottom: 1px solid var(--grid); padding: .45rem .9rem .45rem 0;
+}
+.src-table td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.src-table a, .src-tools a, .tool-card .src-links a {
+  color: var(--petrol); text-decoration: underline; text-underline-offset: 2px;
+  overflow-wrap: break-word;
+}
+.src-table td.links a, .tool-card .src-links a { display: block; overflow-wrap: anywhere; }
+.src-table td.links { min-width: 15rem; }
+.src-tools { display: flex; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: .6rem; }
+.src-tools input {
+  padding: .4rem .6rem; border: 1px solid var(--rule); border-radius: 8px;
+  font-size: .9rem; width: 16rem; max-width: 100%;
+}
+.src-tools .count { color: var(--ink3); font-size: .85rem; }
+.src-tools a { font-size: .88rem; }
+.tool-card .src-inst { margin-top: .4rem; }
+.tool-card .src-links { font-size: .82rem; margin-top: .15rem; }
+
 /* ---- landing figure: four steps in one chart, with a readout ---- */
 .story { padding: .4rem 6vw 1rem; }
 .fig-head {
