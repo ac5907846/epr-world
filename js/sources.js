@@ -1,6 +1,6 @@
 /* Sources view: the six sources of data of the article, and the legal
    instrument and the sources behind the adoption year of each EPR scheme
-   (Table 1 of the article, and Table S1 of its supplementary materials with
+   (Table 1 of the article, and Table S4 of its supplementary materials with
    the references that the table cites). */
 
 function esc(s) {

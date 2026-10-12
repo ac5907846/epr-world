@@ -211,7 +211,7 @@ dump({
 # ---------- sources.json and adoption_sources.csv ----------
 # The six sources of data of the article (its Table 1) with the page of each,
 # and the legal instrument and the sources behind every adoption year (Table
-# S1 of the supplementary materials and its references; both files are made
+# S4 of the supplementary materials and its references; both files are made
 # by 07_Revision 1/_source/_make_adoption_sources.py).
 R1 = HERE.parent / "07_Revision 1"
 table1 = json.loads((R1 / "_source" / "_tables_R1.json").read_text(encoding="utf-8"))["Table 1"]
@@ -225,7 +225,7 @@ PAGES = {
     "Human Development Report": "https://hdr.undp.org/data-center/documentation-and-downloads",
     "Eurostat circular economy indicators":
         "https://ec.europa.eu/eurostat/web/circular-economy/database",
-    "Multiple sources, detailed in Table S1": None,     # listed on the page itself
+    "EPR adoption dataset compiled from public legal sources": None,     # listed on the page itself
 }
 datasets = []
 for name, used, n, years in table1["rows"]:
