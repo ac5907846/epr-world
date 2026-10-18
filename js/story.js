@@ -17,12 +17,13 @@ function prepareStory(S) {
   const KEY = { binding: "Binding EPR", non: "Non-binding EPR", none: "No EPR" };
   const cls = (c) => (c.binding === 1 ? "binding" : c.epr === 1 ? "non" : "none");
   const inc = (c) => (c.income === "HIC" ? "High income" : "Low and middle income");
-  /* The first round of the tour runs at twice the reading pace, so that a
-     visitor sees all four steps soon after arriving: shorter steps, morphs,
-     counts and fades. The reading pace returns when the tour comes back to
-     the first step, or as soon as the reader chooses a step or pauses. */
+  /* The first round of the tour runs faster than the reading pace, so that
+     a visitor sees all four steps soon after arriving: steps of 3 s instead
+     of 4, and morphs, counts and fades shortened in the same proportion. The
+     reading pace returns when the tour comes back to the first step, or as
+     soon as the reader chooses a step or pauses. */
   let quick = !M.reduced;
-  const pace = () => (quick ? .5 : 1);
+  const pace = () => (quick ? .75 : 1);
   const ms = (t) => (M.reduced ? 0 : t * pace());       // a duration at the current pace
   const axis = {
     axisLine: { lineStyle: { color: RULE } }, axisTick: { show: false },

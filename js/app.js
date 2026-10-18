@@ -11,7 +11,7 @@
 
 const DATA = {};
 const viewCharts = {};
-const VERSION = 11;          // bump with every release: the host caches hard
+const VERSION = 12;          // bump with every release: the host caches hard
 const ECHARTS = "https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js";
 
 async function loadJSON(name) {
