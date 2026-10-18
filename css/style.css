@@ -193,6 +193,8 @@ section h2 { font-size: 1.5rem; margin-bottom: .6rem; }
 }
 .readout.in .ro-title, .readout.in .ro-label,
 .readout.in .ro-detail, .readout.in .ro-src { animation: rise .5s ease both; }
+.readout.quick.in .ro-title, .readout.quick.in .ro-label,
+.readout.quick.in .ro-detail, .readout.quick.in .ro-src { animation-duration: .25s; }   /* first round of the tour */
 @keyframes rise {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: none; }

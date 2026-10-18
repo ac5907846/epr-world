@@ -17,14 +17,20 @@ function prepareStory(S) {
   const KEY = { binding: "Binding EPR", non: "Non-binding EPR", none: "No EPR" };
   const cls = (c) => (c.binding === 1 ? "binding" : c.epr === 1 ? "non" : "none");
   const inc = (c) => (c.income === "HIC" ? "High income" : "Low and middle income");
-  const MOVE = M.reduced ? 0 : 750;
+  /* The first round of the tour runs at twice the reading pace, so that a
+     visitor sees all four steps soon after arriving: shorter steps, morphs,
+     counts and fades. The reading pace returns when the tour comes back to
+     the first step, or as soon as the reader chooses a step or pauses. */
+  let quick = !M.reduced;
+  const pace = () => (quick ? .5 : 1);
+  const ms = (t) => (M.reduced ? 0 : t * pace());       // a duration at the current pace
   const axis = {
     axisLine: { lineStyle: { color: RULE } }, axisTick: { show: false },
     axisLabel: { color: INK }, nameTextStyle: { color: INK },
     splitLine: { lineStyle: { color: GRID } },
   };
-  const base = { animation: !M.reduced, animationDurationUpdate: MOVE,
-                 animationEasingUpdate: "cubicInOut" };
+  const base = () => ({ animation: !M.reduced, animationDuration: ms(1000),
+                        animationDurationUpdate: ms(750), animationEasingUpdate: "cubicInOut" });
 
   /* ---- step 1: the map ---- */
   function mapOption() {
@@ -32,7 +38,7 @@ function prepareStory(S) {
     const wide = box.clientWidth / Math.max(1, box.clientHeight) > 1.95;
     const fit = wide ? { left: "center", top: 10, bottom: 6 }
                      : { left: 4, right: 4, top: "middle" };
-    return { ...base,
+    return { ...base(),
       tooltip: { formatter: (p) => {
         const c = CN[p.name];
         return c ? `${c.name}<br>${KEY[cls(c)]}` : "";
@@ -56,9 +62,9 @@ function prepareStory(S) {
       data: fit[key].governance.map((g, i) => [g, fit[key].recycling[i]]),
       lineStyle: { color, width: 3, type: dash ? "dashed" : "solid" },
       endLabel: { show: true, formatter: key, color: INK, fontSize: 12 },
-      animationDuration: M.reduced ? 0 : 550, animationDelay: MOVE * .7,
+      animationDuration: ms(550), animationDelay: ms(750) * .7,
     });
-    return { ...base,
+    return { ...base(),
       grid: { left: 58, right: 118, top: 20, bottom: 48 },
       tooltip: { formatter: (p) => {
         const c = CN[p.name];
@@ -89,7 +95,7 @@ function prepareStory(S) {
     const XMIN = -24, XMAX = 24;
     const rows = ["Low and middle income", "High income", "All countries"]
       .map((k) => ({ k, ...S.check[k] }));
-    return { ...base,
+    return { ...base(),
       grid: { left: 188, right: 30, top: 20, bottom: 48 },
       tooltip: { formatter: (p) => {
         const r = rows.find((q) => q.k === p.name);
@@ -103,7 +109,7 @@ function prepareStory(S) {
                axisLabel: { color: INK, fontSize: 13 } },
       series: [
         { type: "custom", silent: true, z: 2,
-          animationDuration: M.reduced ? 0 : 450, animationDelay: MOVE * .6,
+          animationDuration: ms(450), animationDelay: ms(750) * .6,
           renderItem: (params, api) => {
             const i = api.value(2), lo = api.value(0), hi = api.value(1);
             const a = api.coord([Math.max(lo, XMIN), i]);
@@ -144,7 +150,7 @@ function prepareStory(S) {
         .map(([iso, c]) => ({ name: iso, value: c.msw_2050_t, groupId: inc(c),
           itemStyle: { color: COL[k] },
           label: { color: k === "binding" ? "#fff" : INK } })) }));
-    return { ...base,
+    return { ...base(),
       tooltip: { formatter: (p) => {
         const c = CN[p.name];
         return c ? `${c.name}<br>${M.num(p.value / 1e6, 1)} Mt projected for 2050<br>` +
@@ -217,6 +223,7 @@ function prepareStory(S) {
     stepBox.querySelectorAll("button").forEach((b, j) =>
       b.classList.toggle("active", j === cur));
     ro.classList.remove("in");
+    ro.classList.toggle("quick", quick);      // the fade at the pace of the round
     void ro.offsetWidth;                      // restart the fade of the text
     ro.classList.add("in");
     ro.querySelector(".ro-title").textContent = s.title;
@@ -224,7 +231,7 @@ function prepareStory(S) {
     ro.querySelector(".ro-label").textContent = s.label;
     ro.querySelector(".ro-detail").textContent = s.detail;
     ro.querySelector(".ro-src").textContent = s.source;
-    M.count(ro.querySelector(".ro-n"), s.value, s.dec, 650);
+    M.count(ro.querySelector(".ro-n"), s.value, s.dec, 650 * pace());
     elapsed = 0;
     t0 = performance.now();
   }
@@ -234,7 +241,10 @@ function prepareStory(S) {
     /* the clock waits while the page or this view is not shown */
     if (document.hidden || !view.classList.contains("active")) t0 = now - elapsed;
     elapsed = now - t0;
-    if (elapsed >= STEP_MS) show(cur + 1);
+    if (elapsed >= STEP_MS * pace()) {
+      if (cur === steps.length - 1) quick = false;     // back to the first step: the first round is over
+      show(cur + 1);
+    }
     M.frame(tick);
   }
   function play() {
@@ -247,13 +257,14 @@ function prepareStory(S) {
   }
   function pause() {
     playing = false;
+    quick = false;                        // the reader has taken over: reading pace
     playBtn.textContent = "Play";
   }
 
   playBtn.addEventListener("click", () => (playing ? pause() : play()));
   stepBox.addEventListener("click", (e) => {
     const b = e.target.closest("button");
-    if (b) show(+b.dataset.step);
+    if (b) { quick = false; show(+b.dataset.step); }
   });
   /* The readout and the buttons, before any chart exists. */
   show(0);
